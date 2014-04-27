@@ -46,7 +46,7 @@ use std::intrinsics::{atomic_xadd_relaxed};
 use std::cast::{transmute,forget};
 use std::ptr::{read};
 use std::ty::{Unsafe};
-use std::kinds::marker::{NoShare,NoSend};
+use std::kinds::marker::{NoShare,NoSend,ContravariantLifetime};
 use std::mem::{drop};
 use std::cell::{Cell};
 // These two functions are hacks added to my branch
@@ -277,7 +277,8 @@ struct Value<T> {
 pub struct Borrow<'a, T> {
     value: *Value<T>,
     no_share: NoShare,
-    no_send: NoSend
+    no_send: NoSend,
+    lifetime: ContravariantLifetime<'a>
 }
 
 #[unsafe_destructor]
@@ -301,7 +302,8 @@ impl<'a, T> Deref<T> for Borrow<'a, T> {
 pub struct MutBorrow<'a, T> {
     value: *mut Value<T>,
     no_share: NoShare,
-    no_send: NoSend
+    no_send: NoSend,
+    lifetime: ContravariantLifetime<'a>
 }
 
 #[unsafe_destructor]
@@ -363,7 +365,8 @@ impl<T: Send + Clone> Value<T> {
         Borrow::<'a,T> { 
             value: self,
             no_share: NoShare,
-            no_send: NoSend
+            no_send: NoSend,
+            lifetime: ContravariantLifetime
         }
     }
 
@@ -382,7 +385,8 @@ impl<T: Send + Clone> Value<T> {
         MutBorrow::<'a,T> { 
             value: unsafe { transmute(self) },
             no_share: NoShare,
-            no_send: NoSend
+            no_send: NoSend,
+            lifetime: ContravariantLifetime
         }
     }
 }

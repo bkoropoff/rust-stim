@@ -7,7 +7,7 @@ This is incomplete and experimental.  It unfortunately
 requires a hacked-up version of libstd so that I can
 recover from unwinds:
 
-https://github.com/bkoropoff/rust (branch unwind-hacks)
+https://github.com/bkoropoff/rust/tree/unwind-hacks
 
 API Docs
 ---------

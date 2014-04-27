@@ -968,6 +968,10 @@
 <span id='928'>928</span>
 <span id='929'>929</span>
 <span id='930'>930</span>
+<span id='931'>931</span>
+<span id='932'>932</span>
+<span id='933'>933</span>
+<span id='934'>934</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2014 Brian Koropoff
 //
@@ -995,7 +999,7 @@ having an inconsistent view of variables.  It also makes the interface
 a lot easier to use since client applications don&#39;t need to manually
 propagate transaction failures.
 
-https://github.com/bkoropoff/rust (branch unwind-hacks)
+https://github.com/bkoropoff/rust/tree/unwind-hacks
 
 # References
 
@@ -1017,7 +1021,7 @@ http://research.microsoft.com/en-us/um/people/simonpj/papers/stm/stm.pdf
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cast</span>::{<span class='ident'>transmute</span>,<span class='ident'>forget</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ptr</span>::{<span class='ident'>read</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>ty</span>::{<span class='ident'>Unsafe</span>};
-<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>kinds</span>::<span class='ident'>marker</span>::{<span class='ident'>NoShare</span>,<span class='ident'>NoSend</span>};
+<span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>kinds</span>::<span class='ident'>marker</span>::{<span class='ident'>NoShare</span>,<span class='ident'>NoSend</span>,<span class='ident'>ContravariantLifetime</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>mem</span>::{<span class='ident'>drop</span>};
 <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>cell</span>::{<span class='ident'>Cell</span>};<span class='comment'>
 // These two functions are hacks added to my branch
@@ -1248,7 +1252,8 @@ http://research.microsoft.com/en-us/um/people/simonpj/papers/stm/stm.pdf
 </span><span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>Borrow</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='ident'>value</span>: <span class='op'>*</span><span class='ident'>Value</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>,
     <span class='ident'>no_share</span>: <span class='ident'>NoShare</span>,
-    <span class='ident'>no_send</span>: <span class='ident'>NoSend</span>
+    <span class='ident'>no_send</span>: <span class='ident'>NoSend</span>,
+    <span class='ident'>lifetime</span>: <span class='ident'>ContravariantLifetime</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>
 }
 
 <span class='attribute'>#[<span class='ident'>unsafe_destructor</span>]</span>
@@ -1272,7 +1277,8 @@ http://research.microsoft.com/en-us/um/people/simonpj/papers/stm/stm.pdf
 </span><span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>MutBorrow</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>, <span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='ident'>value</span>: <span class='op'>*</span><span class='kw-2'>mut</span> <span class='ident'>Value</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span>,
     <span class='ident'>no_share</span>: <span class='ident'>NoShare</span>,
-    <span class='ident'>no_send</span>: <span class='ident'>NoSend</span>
+    <span class='ident'>no_send</span>: <span class='ident'>NoSend</span>,
+    <span class='ident'>lifetime</span>: <span class='ident'>ContravariantLifetime</span><span class='op'>&lt;</span><span class='lifetime'>&#39;a</span><span class='op'>&gt;</span>
 }
 
 <span class='attribute'>#[<span class='ident'>unsafe_destructor</span>]</span>
@@ -1334,7 +1340,8 @@ http://research.microsoft.com/en-us/um/people/simonpj/papers/stm/stm.pdf
         <span class='ident'>Borrow</span>::<span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>,<span class='ident'>T</span><span class='op'>&gt;</span> { 
             <span class='ident'>value</span>: <span class='self'>self</span>,
             <span class='ident'>no_share</span>: <span class='ident'>NoShare</span>,
-            <span class='ident'>no_send</span>: <span class='ident'>NoSend</span>
+            <span class='ident'>no_send</span>: <span class='ident'>NoSend</span>,
+            <span class='ident'>lifetime</span>: <span class='ident'>ContravariantLifetime</span>
         }
     }<span class='comment'>
 
@@ -1353,7 +1360,8 @@ http://research.microsoft.com/en-us/um/people/simonpj/papers/stm/stm.pdf
         <span class='ident'>MutBorrow</span>::<span class='op'>&lt;</span><span class='lifetime'>&#39;a</span>,<span class='ident'>T</span><span class='op'>&gt;</span> { 
             <span class='ident'>value</span>: <span class='kw'>unsafe</span> { <span class='ident'>transmute</span>(<span class='self'>self</span>) },
             <span class='ident'>no_share</span>: <span class='ident'>NoShare</span>,
-            <span class='ident'>no_send</span>: <span class='ident'>NoSend</span>
+            <span class='ident'>no_send</span>: <span class='ident'>NoSend</span>,
+            <span class='ident'>lifetime</span>: <span class='ident'>ContravariantLifetime</span>
         }
     }
 }<span class='comment'>

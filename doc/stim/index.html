@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The stim library documentation.">
+
+    <title>stim - Rust</title>
+
+    <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600'
+          rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="../main.css">
+
+    
+</head>
+<body>
+    <!--[if lte IE 8]>
+    <div class="warning">
+        This old browser is unsupported and will most likely display funky
+        things.
+    </div>
+    <![endif]-->
+
+    <section class="sidebar">
+        
+
+        <p class='location'></p>
+    </section>
+
+    <nav class="sub">
+        <form class="search-form js-only">
+            <div class="search-container">
+                <input class="search-input" name="search"
+                       autocomplete="off"
+                       placeholder="Search documentation..."
+                       type="search">
+            </div>
+        </form>
+    </nav>
+
+    <section id='main' class="content mod">
+<h1 class='fqn'>Crate <a class='mod' href=''>stim</a><a class='source' href='../src/stim/lib.rs.html#9-930'>[src]</a></h1>
+<div class='docblock'>
+<h1 id="stm-for-rust" class='section-link'><a
+                           href="#stm-for-rust">STM for Rust</a></h1>
+<p><code>libstim</code> is an (incomplete) implementation of software transactional
+memory based roughly on the design used in the Haskell STM library.</p>
+
+<p>For examples, look at the tests at the end of the source.</p>
+
+<h1 id="caveats" class='section-link'><a
+                           href="#caveats">Caveats</a></h1>
+<p>This library requires a hacked-up version of libstd that allows
+a task to recover from unwinding.  This is used to abort and restart
+transactions and recover from transient errors due to the program
+having an inconsistent view of variables.  It also makes the interface
+a lot easier to use since client applications don&#39;t need to manually
+propagate transaction failures.</p>
+
+<p><a href="https://github.com/bkoropoff/rust">https://github.com/bkoropoff/rust</a> (branch unwind-hacks)</p>
+
+<h1 id="references" class='section-link'><a
+                           href="#references">References</a></h1>
+<h2 id="paper-on-haskell-implementation" class='section-link'><a
+                           href="#paper-on-haskell-implementation">Paper on Haskell implementation</a></h2>
+<p><a href="http://research.microsoft.com/en-us/um/people/simonpj/papers/stm/stm.pdf">http://research.microsoft.com/en-us/um/people/simonpj/papers/stm/stm.pdf</a></p>
+</div><h2 id='structs' class='section-link'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr>
+                        <td><a class='struct' href='struct.Borrow.html'
+                               title='stim::Borrow'>Borrow</a></td>
+                        <td class='docblock short'><p>Immutable variable borrow</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='struct' href='struct.MutBorrow.html'
+                               title='stim::MutBorrow'>MutBorrow</a></td>
+                        <td class='docblock short'><p>Mutable variable borrow</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='struct' href='struct.Transaction.html'
+                               title='stim::Transaction'>Transaction</a></td>
+                        <td class='docblock short'><p>Transaction context</p>
+</td>
+                    </tr>
+                
+                    <tr>
+                        <td><a class='struct' href='struct.Var.html'
+                               title='stim::Var'>Var</a></td>
+                        <td class='docblock short'><p>A transaction variable.</p>
+</td>
+                    </tr>
+                </table><h2 id='functions' class='section-link'><a href="#functions">Functions</a></h2>
+<table>
+                    <tr>
+                        <td><a class='fn' href='fn.atomically.html'
+                               title='stim::atomically'>atomically</a></td>
+                        <td class='docblock short'><p>Perform transaction</p>
+</td>
+                    </tr>
+                </table></section>
+    <section id='search' class="content hidden"></section>
+
+    <section class="footer"></section>
+
+    <div id="help" class="hidden">
+        <div class="shortcuts">
+            <h1>Keyboard shortcuts</h1>
+            <dl>
+                <dt>?</dt>
+                <dd>Show this help dialog</dd>
+                <dt>S</dt>
+                <dd>Focus the search field</dd>
+                <dt>&uarr;</dt>
+                <dd>Move up in search results</dd>
+                <dt>&darr;</dt>
+                <dd>Move down in search results</dd>
+                <dt>&#9166;</dt>
+                <dd>Go to active search result</dd>
+            </dl>
+        </div>
+        <div class="infos">
+            <h1>Search tricks</h1>
+            <p>
+                Prefix searches with a type followed by a colon (e.g.
+                <code>fn:</code>) to restrict the search to a given type.
+            </p>
+            <p>
+                Accepted types are: <code>fn</code>, <code>mod</code>,
+                <code>struct</code> (or <code>str</code>), <code>enum</code>,
+                <code>trait</code>, <code>typedef</code> (or
+                <code>tdef</code>).
+            </p>
+        </div>
+    </div>
+
+    <script>
+        var rootPath = "../";
+        var currentCrate = "stim";
+    </script>
+    <script src="../jquery.js"></script>
+    <script src="../main.js"></script>
+    <script async src="../search-index.js"></script>
+</body>
+</html>

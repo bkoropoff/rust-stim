@@ -1,5 +1,6 @@
 RLIB=$(shell rustc --crate-type=rlib --crate-file-name lib.rs)
 DYLIB=$(shell rustc --crate-type=dylib --crate-file-name lib.rs)
+RUSTFLAGS=-O -g
 
 all: .libs doc
 
@@ -7,11 +8,11 @@ $(RLIB) $(DYLIB): .libs
 	@touch $@
 
 .libs: lib.rs
-	rustc --crate-type=rlib,dylib lib.rs
+	rustc $(RUSTFLAGS) --crate-type=rlib,dylib lib.rs
 	@touch $@
 
 test-stim: lib.rs
-	rustc --test -o $@ $<
+	rustc $(RUSTFLAGS) --test -o $@ $<
 
 test: test-stim
 	./test-stim

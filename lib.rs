@@ -24,7 +24,7 @@ having an inconsistent view of variables.  It also makes the interface
 a lot easier to use since client applications don't need to manually
 propagate transaction failures.
 
-https://github.com/bkoropoff/rust (branch unwind-hacks)
+https://github.com/bkoropoff/rust/tree/unwind-hacks
 
 # References
 

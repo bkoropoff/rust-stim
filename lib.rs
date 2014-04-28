@@ -253,13 +253,6 @@ impl<T: Send + Clone> Drop for Var<T> {
     }
 }
 
-#[deriving(Eq)]
-enum Loan {
-    NoLoan,
-    ImmLoan,
-    MutLoan,
-}
-
 // Local copy of a transaction variable in
 // a transaction log.  This structure tracks
 // the value's borrow state and dirtiness.
@@ -270,7 +263,7 @@ struct Value<T> {
     // to the transaction variable)?
     dirty: Cell<bool>,
     // Tracks extant borrows of the value
-    loan: Cell<Loan>
+    borrows: Cell<(uint, bool)>
 }
 
 /// Immutable variable borrow
@@ -285,7 +278,8 @@ pub struct Borrow<'a, T> {
 impl<'a, T> Drop for Borrow<'a, T> {
     fn drop(&mut self) {
         unsafe {
-            (*self.value).loan.set(NoLoan);
+            let (imm, _) = (*self.value).borrows.get();
+            (*self.value).borrows.set((imm-1, false));
         }
     }
 }
@@ -310,7 +304,7 @@ pub struct MutBorrow<'a, T> {
 impl<'a, T> Drop for MutBorrow<'a, T> {
     fn drop(&mut self) {
         unsafe {
-            (*self.value).loan.set(NoLoan);
+            (*self.value).borrows.set((0, false));
         }
     }
 }
@@ -336,7 +330,7 @@ impl<T: Send + Clone> Value<T> {
         Value {
             value: Unsafe::new(val),
             dirty: Cell::new(false),
-            loan: Cell::new(NoLoan)
+            borrows: Cell::new((0, false))
         }
     }
 
@@ -356,13 +350,15 @@ impl<T: Send + Clone> Value<T> {
 
     // Creates an immutable borrow
     fn borrow<'a>(&'a self) -> Borrow<'a, T> {
-        if self.loan.get() == MutLoan {
+        let (imm, mutable) = self.borrows.get();
+
+        if mutable {
             fail!("Conflicting borrow of transaction variable");
         }
         
-        self.loan.set(ImmLoan);
+        self.borrows.set((imm+1, false));
         
-        Borrow::<'a,T> { 
+        Borrow { 
             value: self,
             no_share: NoShare,
             no_send: NoSend,
@@ -372,11 +368,13 @@ impl<T: Send + Clone> Value<T> {
 
     // Creates a mutable borrow
     fn borrow_mut<'a>(&'a self) -> MutBorrow<'a, T> {
-        if self.loan.get() != NoLoan {
+        let (imm, _) = self.borrows.get();
+
+        if imm != 0 {
             fail!("Conflicting borrow of transaction variable");
         }
         
-        self.loan.set(MutLoan);
+        self.borrows.set((0, true));
         
         // Since the caller may modify the value, we must
         // write it back to the variable on transaction commit
